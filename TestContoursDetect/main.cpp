@@ -8,12 +8,13 @@
 //#include <string>
 using namespace std;
 using namespace  cv;
+#define Test 0
 
 int main()
 {
 
 	//const char *imgpath = "stitch1.bmp";
-	string tp_imagePath ="C:/VC/测试/TestContoursDetect/Debug/stitch1.bmp";
+	string tp_imagePath ="C:/VC/测试/TestContoursDetect/Debug/26stitch-1-501.bmp";
 	//IplImage *img = cvLoadImage(imgpath);//加载图像文件至内存
 	//Mat imag(cvSize(img->width,img->height),CV_8UC1,img->imageDataOrigin);
 	Mat image;
@@ -47,18 +48,22 @@ int main()
 		cvtColor(image_Resized,image_Gray,CV_BGR2GRAY);
 	}
 	//显示裁剪的图像
+#if Test
 	namedWindow("Example4",CV_WINDOW_NORMAL);//创建一个名为Example1的窗口
 	imshow("Example4",image_Color);
 	cvWaitKey(0);//等待用户触发按键
 	destroyWindow("Example4");
+#endif
 	//image_Resized.release();
 	//模糊图像
 	Mat  image_Gray_Blur;
 	blur (image_Gray,image_Gray_Blur,cvSize(2,3));
+#if Test
 	namedWindow("Example2",CV_WINDOW_NORMAL);//创建一个名为Example1的窗口
 	imshow("Example2",image_Gray_Blur);
 	cvWaitKey(0);//等待用户触发按键
 	destroyWindow("Example2");
+#endif
 	//二值化
 	Mat  image_Gray_adaptiveThreshold;
 	adaptiveThreshold(image_Gray_Blur, image_Gray_adaptiveThreshold, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, 11, 5);
@@ -66,19 +71,23 @@ int main()
 	int tp_sizeofBinaryWidth = image_Gray_adaptiveThreshold.size().width;
 	int tp_type = image_Gray_adaptiveThreshold.type();
 	int tp_pointOfImage = image_Gray_adaptiveThreshold.at<uchar>(20,15);
+#if Test
 	namedWindow("Example3",CV_WINDOW_NORMAL);//创建一个名为Example1的窗口
 	imshow("Example3",image_Gray_Blur);
 	cvWaitKey(0);//等待用户触发按键
 	destroyWindow("Example3");
+#endif 
 	//创造轮廓
 	Mat image_element1 = getStructuringElement(MORPH_RECT, Size(3, 3));
 	//形态学操作
 	Mat image_GetElementl;
 	morphologyEx(image_Gray_adaptiveThreshold, image_GetElementl, MORPH_OPEN, image_element1);
+#if Test
 	namedWindow("Example5",CV_WINDOW_NORMAL);//创建一个名为Example1的窗口
 	imshow("Example5",image_GetElementl);
 	cvWaitKey(0);//等待用户触发按键
 	destroyWindow("Example5");
+#endif 
 	//发现轮廓
 	vector<vector<Point> > tp_contours;
 	cv::vector<Vec4i> tp_hierarchy;
@@ -86,11 +95,15 @@ int main()
 	Scalar color( rand()&255, rand()&255, rand()&255 );
 	//将所有获取的轮廓画上去
 	//drawContours(image_Color,tp_contours,-1,color,CV_FILLED,8,tp_hierarchy);
+#if Test
 	namedWindow("Example6",CV_WINDOW_NORMAL);//创建一个名为Example1的窗口
 	imshow("Example6",image_Color);
 	cvWaitKey(0);//等待用户触发按键
 	destroyWindow("Example6");
+#endif 
 	//对轮廓进行筛选
+	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	vector <Point>  tp_SortOfContours;
 	vector<vector<Point> > tp_contours_filter;
 	vector<Point>		   tp_vector_centofContours;
 	vector<Rect>		   tp_vector_rect;
@@ -240,11 +253,12 @@ int main()
 		{
 			drawContours(tp_mat_image_bigContoursOne,tp_contours,tp_vector_contoursIndex_bigone[i],Scalar(255),CV_FILLED);
 		}
-
+#if Test
 		namedWindow("Example位置10",CV_WINDOW_NORMAL);//创建一个名为Example1的窗口
 		imshow("Example位置10",tp_mat_image_bigContoursOne);
 		cvWaitKey(0);//等待用户触发按键
 		destroyWindow("Example位置10");
+#endif 
 
 		tp_contours.clear(); //清空轮廓
 		tp_hierarchy.clear();
@@ -264,10 +278,12 @@ int main()
 			cv::line(tp_mat_image_bigContoursOne, startr, endr, Scalar(0, 0, 0), 3);
 		}
 		//位置11
+#if Test
 		namedWindow("Example位置11",CV_WINDOW_NORMAL);//创建一个名为Example1的窗口
 		imshow("Example位置11",tp_mat_image_bigContoursOne);
 		cvWaitKey(0);//等待用户触发按键
 		destroyWindow("Example位置11");
+#endif 
 		tp_contours.clear(); //清空轮廓
 		tp_hierarchy.clear();
 		tp_i_bigContoursOneNumber = 0;
@@ -292,10 +308,12 @@ int main()
 			}
 		}
 		//位置12
+#if Test
 		namedWindow("Example位置12",CV_WINDOW_NORMAL);//创建一个名为Example1的窗口
 		imshow("Example位置12",tp_mat_image_bigContoursOne);
 		cvWaitKey(0);//等待用户触发按键
 		destroyWindow("Example位置12");
+#endif
 	
 	}
 
@@ -333,10 +351,12 @@ int main()
 	}
 
 	//位置13
+#if Test
 	namedWindow("Example位置13",CV_WINDOW_NORMAL);//创建一个名为Example1的窗口
 	imshow("Example位置13",tp_mat_image_bigContoursTwo);
 	cvWaitKey(0);//等待用户触发按键
 	destroyWindow("Example位置13");
+#endif
 	if (tp_i_bigContoursTwoNumber != 0){
 
 		tp_contours.clear();
@@ -371,11 +391,12 @@ int main()
 
 
 		//位置14
+#if Test
 		namedWindow("Example位置14",CV_WINDOW_NORMAL);//创建一个名为Example1的窗口
 		imshow("Example位置14",tp_mat_image_bigContoursTwo);
 		cvWaitKey(0);//等待用户触发按键
 		destroyWindow("Example位置14");
-
+#endif
 
 		//继续处理
 		tp_contours.clear();
@@ -408,10 +429,12 @@ int main()
 
 
 	//位置15
+#if Test
 	namedWindow("Example位置15",CV_WINDOW_NORMAL);//创建一个名为Example1的窗口
 	imshow("Example位置15",tp_mat_image_bigContoursTwo);
 	cvWaitKey(0);//等待用户触发按键
 	destroyWindow("Example位置15");
+#endif
 	//以下处理竖直的一列没分开好的
 	if (tp_i_bigContoursTwoNumber != 0){
 
@@ -489,26 +512,294 @@ int main()
 			}
 		}
 	}
+#if 0
 	tp_mat_image_bigContoursTwo = Mat::zeros(image_Gray.size(),CV_8UC1);
 	drawContours(tp_mat_image_bigContoursTwo,tp_contours_filter,-1,Scalar(255),CV_FILLED);
 	namedWindow("Example位置最后",CV_WINDOW_NORMAL);//创建一个名为Example1的窗口
 	imshow("Example位置最后",tp_mat_image_bigContoursTwo);
 	cvWaitKey(0);//等待用户触发按键
 	destroyWindow("Example位置最后");
+#endif
 	//std::sort(theSortOfContours.begin(), theSortOfContours.end(), SortByM2);
 	//针对
 
 	//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	//分割线  对图形的基本轮廓处理已经完成
-	Mat ImageAbout_Contours;
-	cProcessFunction::getImgAboutContours(image_Gray,ImageAbout_Contours,tp_contours_filter);
+
+	//以下开始对轮廓进行分层
+	Mat ImageAbout_Contours_Mask;  //通过图形
+	cProcessFunction::getImgAboutContours(image_Gray,ImageAbout_Contours_Mask,tp_contours_filter);
 	namedWindow("Example轮廓链接",CV_WINDOW_NORMAL);//创建一个名为Example1的窗口
-	imshow("Example轮廓链接",ImageAbout_Contours);
+	imshow("Example轮廓链接",ImageAbout_Contours_Mask);
 	cvWaitKey(0);//等待用户触发按键
 	destroyWindow("Example轮廓链接");
 
-	//
-	vector <int > tp_IndexOfVector;
+	//确认图像在mat中如何存储
+	Mat imageTest = Mat::zeros(image_Gray.size(),CV_8UC1);
+	for (int j = 0; j <100;j++)
+	{
+		for (int i =0 ;i <100;i++)
+		{
+			imageTest.at<uchar>(j,i) = 255;
+		}
+	}
+	namedWindow("ExampleTest",CV_WINDOW_NORMAL);//创建一个名为Example1的窗口
+	imshow("ExampleTest",imageTest);
+//	cvWaitKey(0);//等待用户触发按键
+	waitKey();
+	destroyWindow("ExampleTest");
+
+
+	//对整体轮廓进行分层处理
+	vector<bool > contoursUsed;
+	vector< vector<int> > indexSeriers;  //存放在一条线上的轮廓  将轮廓分层
+	contoursUsed.resize(tp_vector_rect.size());  //
+
+	//对轮廓进行分层
+	for (int i = 0; i < tp_vector_rect.size(); i++) 
+	{
+		//改轮廓已经被使用
+		if (contoursUsed[i])
+		{
+			continue;
+		}
+		vector<int> tp_upTodown_Seriers;
+		//vector<int> tp_downToup_Seriers; 
+		int    tp_delete_ContoursIndex = -1; //用于存储通过进行检测不符合同一层的轮廓的index
+		tp_upTodown_Seriers.push_back(i);
+		//tp_downToup_Seriers.push_back(i);
+		int StartX = tp_vector_centofContours[i].x;
+		if (StartX <3 || StartX > ImageAbout_Contours_Mask.cols -4 )
+		{
+			contoursUsed[i] = TRUE;
+			continue;
+		}
+		//从上往下遍历
+		for ( int j = tp_vector_rect[i].y+tp_vector_rect[i].height;j < ImageAbout_Contours_Mask.rows; j++)
+		{
+			if (StartX <3 || StartX > ImageAbout_Contours_Mask.cols -4 )
+			{
+				break;
+			}
+			int currentIndex = -1;
+			int lastIndex = -1;
+			if (ImageAbout_Contours_Mask.at<unsigned short>(j, StartX) != 0)
+			{
+				currentIndex = ImageAbout_Contours_Mask.at<unsigned short>(j, StartX) - 1;
+			}
+			else
+			{
+				if (ImageAbout_Contours_Mask.at<unsigned short>(j, StartX - 3) != 0)
+				{
+					currentIndex = ImageAbout_Contours_Mask.at<unsigned short>(j, StartX - 3) - 1;
+				}
+				else
+				{
+					if (ImageAbout_Contours_Mask.at<unsigned short>(j, StartX + 3) != 0)
+					{
+						currentIndex = ImageAbout_Contours_Mask.at<unsigned short>(j, StartX + 3) - 1;
+					}
+				}
+			}
+			if (-1 == currentIndex )
+			{
+				continue;
+			}
+			//如果获取到的index是已经
+			lastIndex =  tp_upTodown_Seriers.back();
+			if (currentIndex == lastIndex)
+			{
+				continue;
+			}
+			//对于判断过 并非同一层的轮廓删除
+			if (currentIndex == tp_delete_ContoursIndex )
+			{
+				continue;
+			}
+			//使用rect进行判断是否属于同一层
+			Rect currentRect = tp_vector_rect[currentIndex];
+			Rect lastRect = tp_vector_rect[lastIndex];
+
+			int lastLastIndex;
+			Rect lastLastRect;
+			if (tp_upTodown_Seriers.size()< 2)
+			{
+				if (1 == cProcessFunction::check2Rect310190117(lastRect, currentRect, 0) &&(1 == cProcessFunction::check2cent311290117(lastRect, currentRect)))
+				{
+					tp_upTodown_Seriers.push_back(currentIndex);
+					contoursUsed[currentIndex] = TRUE;
+					StartX = tp_vector_centofContours[currentIndex].x;
+					j = tp_vector_rect[currentIndex].y + tp_vector_rect[currentIndex].height;
+					//rectangle(img1, m_vect_contourRect[currentIndex], color[j % 10], 2);
+				}
+			}
+			//同一列有多个轮廓的情况下 (即indexVector存在多个轮廓的位置)
+			else
+			{
+				lastLastIndex = tp_upTodown_Seriers[tp_upTodown_Seriers.size() - 2];
+				lastLastRect = tp_vector_rect[lastLastIndex];
+				//进行判断是否属于同一列瓦楞
+				if (1 == cProcessFunction::check2Rect310190117(lastRect, currentRect, 0) && 1 == cProcessFunction::check3cent311290117(lastLastRect, lastRect, currentRect) && 1 == cProcessFunction::check1cent310190117(lastLastRect, currentRect))
+				{
+					tp_upTodown_Seriers.push_back(currentIndex);
+					contoursUsed[currentIndex] = TRUE;
+					StartX = tp_vector_centofContours[currentIndex].x;
+					j = tp_vector_rect[currentIndex].y + tp_vector_rect[currentIndex].height;
+					//rectangle(img1, m_vect_contourRect[currentIndex], color[j % 10], 2);
+				}
+				else
+				{
+					//判断是否处于同一列
+					if (1 == cProcessFunction:: check2Rect310190117(lastLastRect, currentRect, 2) && 1 == cProcessFunction::check3cent311290117(lastLastRect, lastRect, currentRect) && 1 == cProcessFunction::check1cent310190117(lastLastRect, currentRect))
+					{//当前和上上一个进行比较	
+						tp_upTodown_Seriers.push_back(currentIndex);
+						contoursUsed[currentIndex] = TRUE;
+						StartX = tp_vector_centofContours[currentIndex].x;
+						j = tp_vector_rect[currentIndex].y + tp_vector_rect[currentIndex].height;
+					}
+					else  //如果不属于同一列
+					{
+						tp_delete_ContoursIndex = currentIndex;
+						continue;
+					}
+				}
+			}
+		}
+		//从上往下遍历完成
+
+		StartX = tp_vector_centofContours[i].x;
+		tp_delete_ContoursIndex  = -1;
+		//从下往上遍历
+		for (int j = tp_vector_rect[i].y; j > 0; j--)
+		{
+			if (StartX <3 || StartX > ImageAbout_Contours_Mask.cols -4 )
+			{
+				break;
+			}
+			int currentIndex = -1;
+			int lastIndex = -1;
+			if (ImageAbout_Contours_Mask.at<unsigned short>(j, StartX) != 0)
+			{
+				currentIndex = ImageAbout_Contours_Mask.at<unsigned short>(j, StartX) - 1;
+			}
+			else
+			{
+				if (ImageAbout_Contours_Mask.at<unsigned short>(j, StartX - 3) != 0)
+				{
+					currentIndex = ImageAbout_Contours_Mask.at<unsigned short>(j, StartX - 3) - 1;
+				}
+				else
+				{
+					if (ImageAbout_Contours_Mask.at<unsigned short>(j, StartX + 3) != 0)
+					{
+						currentIndex = ImageAbout_Contours_Mask.at<unsigned short>(j, StartX + 3) - 1;
+					}
+				}
+			}
+			if (-1 == currentIndex )
+			{
+				continue;
+			}
+			//如果获取到的index是已经
+			lastIndex =  tp_upTodown_Seriers.at(0);
+			if (currentIndex == lastIndex)
+			{
+				continue;
+			}
+			//对于判断过 并非同一层的轮廓删除
+			if (currentIndex == tp_delete_ContoursIndex )
+			{
+				continue;
+			}
+			//使用rect进行判断是否属于同一层
+			Rect currentRect = tp_vector_rect[currentIndex];
+			Rect lastRect = tp_vector_rect[lastIndex];
+
+			int lastLastIndex;
+			Rect lastLastRect;
+			if (tp_upTodown_Seriers.size()< 2)
+			{
+				if (1 == cProcessFunction::check2Rect310190117(lastRect, currentRect, 0) &&(1 == cProcessFunction::check2cent311290117(lastRect, currentRect)))
+				{
+					//由于是从下往上 需要插入到列首
+					//tp_upTodown_Seriers.push_back(currentIndex);
+					tp_upTodown_Seriers.insert(tp_upTodown_Seriers.begin(),currentIndex);
+					contoursUsed[currentIndex] = TRUE;
+					StartX = tp_vector_centofContours[currentIndex].x;
+					j = tp_vector_rect[currentIndex].y;
+					//rectangle(img1, m_vect_contourRect[currentIndex], color[j % 10], 2);
+				}
+			}
+			//同一列有多个轮廓的情况下 (即indexVector存在多个轮廓的位置)
+			else
+			{
+				lastLastIndex = tp_upTodown_Seriers.at(1);
+				lastLastRect = tp_vector_rect[lastLastIndex];
+				//进行判断是否属于同一列瓦楞
+				if (1 == cProcessFunction::check2Rect310190117(lastRect, currentRect, 0) && 1 == cProcessFunction::check3cent311290117(lastLastRect, lastRect, currentRect) && 1 == cProcessFunction::check1cent310190117(lastLastRect, currentRect))
+				{
+					//由于是从下往上 需要插入到列首
+					//tp_upTodown_Seriers.push_back(currentIndex);
+					tp_upTodown_Seriers.insert(tp_upTodown_Seriers.begin(),currentIndex);
+					contoursUsed[currentIndex] = TRUE;
+					StartX = tp_vector_centofContours[currentIndex].x;
+					j = tp_vector_rect[currentIndex].y ;
+					//rectangle(img1, m_vect_contourRect[currentIndex], color[j % 10], 2);
+				}
+				else
+				{
+					//判断是否处于同一列
+					if (1 == cProcessFunction:: check2Rect310190117(lastLastRect, currentRect, 2) && 1 == cProcessFunction::check3cent311290117(lastLastRect, lastRect, currentRect) && 1 == cProcessFunction::check1cent310190117(lastLastRect, currentRect))
+					{//当前和上上一个进行比较	
+						//由于是从下往上 需要插入到列首
+						//tp_upTodown_Seriers.push_back(currentIndex);
+						tp_upTodown_Seriers.insert(tp_upTodown_Seriers.begin(),currentIndex);
+						contoursUsed[currentIndex] = TRUE;
+						StartX = tp_vector_centofContours[currentIndex].x;
+						j = tp_vector_rect[currentIndex].y;
+					}
+					else  //如果不属于同一列
+					{
+						tp_delete_ContoursIndex = currentIndex;
+						continue;
+					}
+				}
+			}	
+		}
+		//从下至上遍历完成
+		indexSeriers.push_back(tp_upTodown_Seriers);
+
+	}//轮廓分层完成
+
+	//对分层进行排序
+	vector <int > sortIndexOfSeriers; //排序后的各层的顺序
+	for (int i = 0; i < indexSeriers.size();i++)
+	{
+		if (indexSeriers[i].size() < 3 || indexSeriers[i].size() > 100)
+		{
+			//过长的轮廓也会被删掉
+			continue ;
+		};
+
+	}
+
+	//显示连线结果
+	cv::Size tp_size = image_Color.size();
+	Mat imageTest22= Mat::zeros(tp_size,CV_8UC1);
+	Mat image_ColorFul;
+	cvtColor(image_Gray, image_ColorFul, CV_GRAY2BGR);
+	for (int ii = 0; ii <indexSeriers.size(); ii++)
+	{
+		Point PointOne = tp_vector_centofContours[indexSeriers[ii].at(0)];
+		Point PointTwo = tp_vector_centofContours[indexSeriers[ii].back()];
+	    cv::line(image_ColorFul,PointOne,PointTwo, Scalar(255,0,255),2);
+	}
+	namedWindow("ExampleTest",CV_WINDOW_NORMAL);//创建一个名为Example1的窗口
+	imshow("ExampleTest",image_ColorFul);
+	//	cvWaitKey(0);//等待用户触发按键
+	waitKey();
+	destroyWindow("ExampleTest");
+
 
 	image_Gray.release();
 	return 0;
