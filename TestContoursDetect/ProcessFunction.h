@@ -1,12 +1,12 @@
-#pragma once 
+ï»¿#pragma once 
 #include "opencv2\core\core.hpp"
 using namespace cv;
 class  cProcessFunction 
 {
 public:
-	static int signalContoursJudge(Mat  binaryImage,CvRect theRect);   //ĞÎ×´¼ì²â£¬ÊÇ·ñÎªÈı½ÇĞÎ
+	static int signalContoursJudge(Mat  binaryImage,CvRect theRect);   //å½¢çŠ¶æ£€æµ‹ï¼Œæ˜¯å¦ä¸ºä¸‰è§’å½¢
 	static void   getImgAboutContours(Mat &binImg,Mat &MarkImg ,vector<vector<Point> > &theContours);  //
-	//Ğ£ÑéÍ¬Ò»ÁĞµÄÂÖÀª
+	//æ ¡éªŒåŒä¸€åˆ—çš„è½®å»“
 	static bool check2Rect310190117(Rect &r1, Rect &r2, int theLevel); //
 	static bool check1cent310190117(Rect &r1, Rect &r2);
 	static bool check3cent311290117(Rect &r0, Rect &r1, Rect &r2);
@@ -15,18 +15,29 @@ public:
 
 struct SORTLAYERSTRUCT
 {
-	int XAverage;     //Æ½¾ùxµÄ×ø±ê
-	int indexOfLayer;  //²ãÊı
+	int XAverage;     //å¹³å‡xçš„åæ ‡
+	int indexOfLayer;  //å±‚æ•°
 };
 
-//µ¥²ã
+//å•å±‚
 class cLayer 
 {
 public:
-	vector <Point> m_vector_LayerPoint;
-	int   m_i_PointCentXAverage;   //Æ½¾ùx×ø±ê
-	int   m_i_PointCentXMax;       //×î´ó×ø±ê
-	int   m_i_PointCentXMin;       //×îĞ¡×ø±ê
-	int   m_i_CentSum;             //×ÜXÖµ
-	void  Caclute();    //»ñÈ¡Æ½¾ù×ø±ê
+	vector <Point> m_vector_LayerPoint;   //åŸæœ‰çš„è½®å»“ä¸­å¿ƒç‚¹
+	int   m_i_PointCentXAverage;   //å¹³å‡xåæ ‡
+	int   m_i_PointCentXMax;       //æœ€å¤§åæ ‡
+	int   m_i_PointCentXMin;       //æœ€å°åæ ‡
+	int   m_i_CentSum;             //æ€»Xå€¼
+
+
+	int m_i_FitPointCentXAverage;   //å¹³å‡Xå€¼
+	int m_i_FitPointCentXMax;      //æœ€å¤§åæ ‡
+	int m_i_FitPointCentXMinj;     //æœ€å°åæ ‡
+	int m_i_FitPointXSum;          //Xæ€»å’Œ
+	vector <Point> m_vector_FitLayerCentPoint;  //è‡ªé€‚åº”çº¿ä¸Šå¯¹åº”çš„å„ç‚¹
+	double m_d_fitLine_b;   //ç›´çº¿bå€¼ y = kx + b 
+	double m_d_fitLine_k;   //ç›´çº¿kå€¼
+
+	void  Caclute();    //è·å–å¹³å‡åæ ‡
+	void  GetFitLine();  //çº¿æ€§åŒ–
 };

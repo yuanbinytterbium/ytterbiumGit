@@ -1,5 +1,6 @@
 #include "ProcessFunction.h"
-#include "opencv/highgui.h"
+#include "opencv/cv.h" 
+#include "highgui.h"
 
 
 //单个形状判断
@@ -306,7 +307,7 @@ bool cProcessFunction::check2Rect310190117(Rect &r1, Rect &r2, int theLevel)
 	bool flag2 = (right1) && (right2) && (right3);//右侧对齐
 	if ((r1.x == 9073) && (r1.y == 111) && (r1.width == 14) && (r1.height == 8))
 	{
-		waitKey();
+		cv::waitKey();
 	}
 
 	if (flag1 || flag2){
@@ -425,12 +426,31 @@ bool cProcessFunction::check2cent311290117(Rect &r0, Rect &r1)
 	}
 }
 
+//计算平均X值
 void  cLayer::Caclute()
 {
 	m_i_PointCentXMax = m_vector_LayerPoint[0].x;
 	m_i_PointCentXMin = m_vector_LayerPoint[0].x;
+	m_i_CentSum = 0;
 	for (int i= 0; i <m_vector_LayerPoint.size();i++)
 	{
+		m_i_CentSum += m_vector_LayerPoint[i].x;
+		m_i_PointCentXMax = m_i_PointCentXMax>m_vector_LayerPoint[i].x?m_i_PointCentXMax:m_vector_LayerPoint[i].x;
+		m_i_PointCentXMin = m_i_PointCentXMin<m_vector_LayerPoint[i].x?m_i_PointCentXMax:m_vector_LayerPoint[i].x;
+	}
+	m_i_PointCentXAverage = m_i_CentSum/m_vector_LayerPoint.size();
+	return ;
+};
 
+void cLayer::GetFitLine()
+{
+	Vec4f line;
+	cv::fitLine(Mat(m_vector_LayerPoint), line, CV_DIST_HUBER, 0, 0.01, 0.01);
+	m_d_fitLine_k = line[1]/line[0];
+	m_d_fitLine_b = line[3] - m_d_fitLine_k * line[2];
+	double fitX = 0;
+	for (int i = 0; i < m_vector_LayerPoint.size();i++)
+	{
+		fitX = m_vector_LayerPoint[i].y - m_d_fitLine_b;
 	}
 };
