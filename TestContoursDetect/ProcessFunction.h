@@ -16,7 +16,7 @@ public:
 struct SORTLAYERSTRUCT
 {
 	int XAverage;     //平均x的坐标
-	int indexOfLayer;  //层数
+	int indexOfLayer;  //层的坐标
 };
 
 //单层
@@ -32,7 +32,7 @@ public:
 
 	int m_i_FitPointCentXAverage;   //平均X值
 	int m_i_FitPointCentXMax;      //最大坐标
-	int m_i_FitPointCentXMinj;     //最小坐标
+	int m_i_FitPointCentXMin;     //最小坐标
 	int m_i_FitPointXSum;          //X总和
 	vector <Point> m_vector_FitLayerCentPoint;  //自适应线上对应的各点
 	double m_d_fitLine_b;   //直线b值 y = kx + b 
@@ -40,4 +40,18 @@ public:
 
 	void  Caclute();    //获取平均坐标
 	void  GetFitLine();  //线性化
+};
+
+
+class  cMultiLayers 
+{
+public:
+	vector<vector <int>> * m_pointVector_indexOfAllLayer;
+	vector <int>  m_vector_sortIndexOfLayer;
+	vector <Point> m_vector_SortLayer;
+	vector <cLayer>  m_vector_clayer_AllLayer;
+	static bool SortCompareFunction(Point & one,Point &two);
+	void SortLayer();
+
+
 };

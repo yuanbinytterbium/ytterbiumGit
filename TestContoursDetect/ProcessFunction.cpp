@@ -1,7 +1,8 @@
 #include "ProcessFunction.h"
 #include "opencv/cv.h" 
 #include "highgui.h"
-
+#include <iostream>
+using namespace std;
 
 //单个形状判断
 int cProcessFunction::signalContoursJudge(Mat  binaryImage,CvRect theRect)
@@ -436,7 +437,7 @@ void  cLayer::Caclute()
 	{
 		m_i_CentSum += m_vector_LayerPoint[i].x;
 		m_i_PointCentXMax = m_i_PointCentXMax>m_vector_LayerPoint[i].x?m_i_PointCentXMax:m_vector_LayerPoint[i].x;
-		m_i_PointCentXMin = m_i_PointCentXMin<m_vector_LayerPoint[i].x?m_i_PointCentXMax:m_vector_LayerPoint[i].x;
+		m_i_PointCentXMin = m_i_PointCentXMin<m_vector_LayerPoint[i].x?m_i_PointCentXMin:m_vector_LayerPoint[i].x;
 	}
 	m_i_PointCentXAverage = m_i_CentSum/m_vector_LayerPoint.size();
 	return ;
@@ -449,8 +450,38 @@ void cLayer::GetFitLine()
 	m_d_fitLine_k = line[1]/line[0];
 	m_d_fitLine_b = line[3] - m_d_fitLine_k * line[2];
 	double fitX = 0;
+	Point tp_point;
 	for (int i = 0; i < m_vector_LayerPoint.size();i++)
 	{
-		fitX = m_vector_LayerPoint[i].y - m_d_fitLine_b;
+		fitX = (m_vector_LayerPoint[i].y - m_d_fitLine_b)/m_d_fitLine_k;
+		m_vector_FitLayerCentPoint.push_back(Point(fitX,m_vector_LayerPoint[i].y));
 	}
+	m_i_FitPointXSum  = 0;
+	m_i_FitPointCentXMin = m_vector_FitLayerCentPoint[0].x;
+	m_i_FitPointCentXMax = m_vector_FitLayerCentPoint[0].x;
+	m_i_FitPointCentXAverage = 0;
+	for (int i = 0; i < m_vector_FitLayerCentPoint.size(); i++)
+	{
+		m_i_FitPointXSum += m_vector_FitLayerCentPoint[i].x;
+		m_i_FitPointCentXMax = m_i_FitPointCentXMax>m_vector_FitLayerCentPoint[i].x?m_i_FitPointCentXMax:m_vector_FitLayerCentPoint[i].x;
+		m_i_FitPointCentXMax = m_i_FitPointCentXMax<m_vector_FitLayerCentPoint[i].x?m_i_FitPointCentXMax:m_vector_FitLayerCentPoint[i].x;
+	}
+	m_i_FitPointCentXAverage = m_i_PointCentXAverage/m_vector_FitLayerCentPoint.size();
+	return ;
 };
+
+//排序需要使用
+bool cMultiLayers::SortCompareFunction(Point & one,Point &two)
+{
+	return one.x>two.x;
+};
+//分层
+void cMultiLayers::SortLayer()
+{
+	for (int i = 0 ;i < m_pointVector_indexOfAllLayer->size(); i++)
+	{
+		m_vector_SortLayer.push_back(Point(m_vector_clayer_AllLayer[i].m_i_PointCentXAverage,i));
+	}
+	//std::sort(m_vector_SortLayer.begin(),m_vector_SortLayer.back(),);
+	 
+}
