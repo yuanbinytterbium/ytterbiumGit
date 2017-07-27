@@ -772,6 +772,12 @@ int main()
 	}//轮廓分层完成
 
 	//对分层进行排序
+	cMultiLayers tp_MultiLayers;
+	tp_MultiLayers.m_pointvecvec_allContours = &tp_contours_filter;
+	tp_MultiLayers.m_pointvec_allContoursCent = &tp_vector_centofContours;
+	tp_MultiLayers.m_pointvec_allContoursRect = &tp_vector_rect;
+	tp_MultiLayers.m_pointVector_indexOfAllLayer = &indexSeriers;
+
 	vector <int > sortIndexOfSeriers; //排序后的各层的顺序
 	for (int i = 0; i < indexSeriers.size();i++)
 	{
@@ -780,8 +786,16 @@ int main()
 			//过长的轮廓也会被删掉
 			continue ;
 		};
-
+		cLayer tp_layer;
+		for (int jj = 0; jj < indexSeriers[i].size(); jj++)
+		{
+			tp_layer.AddMember(indexSeriers[i][jj],tp_vector_rect[indexSeriers[i][jj]],tp_vector_centofContours[indexSeriers[i][jj]]);
+		}
+		tp_MultiLayers.AddMember(tp_layer);
 	}
+	//进行排序
+	tp_MultiLayers.ArrangeLayer();
+
 
 	//显示连线结果
 	cv::Size tp_size = image_Color.size();

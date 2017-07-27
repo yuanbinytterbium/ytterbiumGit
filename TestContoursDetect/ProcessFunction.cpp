@@ -427,6 +427,119 @@ bool cProcessFunction::check2cent311290117(Rect &r0, Rect &r1)
 	}
 }
 
+//筛选层数
+bool cProcessFunction::delateSomeClass1101710119(Mat &graySrc, Mat &m_mat_binContourImg_, cMultiLayers & theSetOfserial)
+{
+
+	////////////////////////////////////////
+	Mat   img, cannySrc1, edge, cannySrc2, edge1, graySrc1;
+	Mat   img2;
+	cvtColor(graySrc, img, CV_GRAY2BGR);
+	graySrc.copyTo(graySrc1);
+	//medianBlur(graySrc1, edge1, 5);
+	blur(graySrc1, edge1, Size(4, 4));
+	cv::Mat kernela(3, 3, CV_32F, cv::Scalar(0)); //生成一个核函数 
+	kernela.at<float>(1, 1) = 5.0;
+	//kernela.at<float>(0, 2) = 1.0;
+	//kernela.at<float>(2, 2) = 1.0;
+	//kernela.at<float>(0, 0) = 1.0;
+	//kernela.at<float>(2, 0) = 1.0;
+	kernela.at<float>(0, 1) = -1.0;
+	kernela.at<float>(2, 1) = -1.0;
+	kernela.at<float>(1, 0) = -1.0;
+	kernela.at<float>(1, 2) = -1.0;
+	filter2D(edge1, edge1, edge1.depth(), kernela);
+	filter2D(graySrc, edge, graySrc.depth(), kernela);
+	blur(edge1, edge1, Size(4, 4));
+	//medianBlur(edge, edge, 5);
+	blur(edge, edge, Size(4, 4));
+	Canny(edge1, cannySrc1, 30, 130, 3);
+	Canny(edge, cannySrc2, 30, 130, 3);
+	img.copyTo(img2);
+	///////////////////////////////////////
+	vector<int> classrect;
+	theSetOfserial.ArrangeLayer();
+	if (theSetOfserial.m_vector_indexLegal.size() <= 2){
+		return 0;
+	}
+	for (int i = 0; i < theSetOfserial.size(); i++){
+		//比较当前层与上一层和下一层之间的关系.
+		cLayer   *currentClass = theSetOfserial.at(i);
+		currentClass->GetFitLine();
+
+		if (currentClass->m_b_LayerLegal == 0){ continue; }
+
+		vector<int> eachHistR;
+		eachHistR.resize(2200);//此处很容易越界
+		for (int i = 0; i < currentClass->m_vecotr_contoursRect.size(); i++){
+			int curarea = (currentClass->m_vecotr_contoursRect[i].height)*(currentClass->m_vecotr_contoursRect[i].width);
+			if (curarea >= 2200){
+				curarea = 2100;
+			}
+			eachHistR[curarea]++;
+
+		}
+
+		int collect1010Con = 0;
+		int collectIndex10 = 0;
+
+		for (int i = eachHistR.size() - 1; i > 0; i--){
+			collect1010Con += eachHistR[i];
+			if (collect1010Con > (currentClass->m_vecotr_contoursRect.size() / 2)){
+				collectIndex10 = i;
+				break;
+			}
+		}
+
+		classrect.push_back(collectIndex10);
+		eachHistR.clear();
+		////////////////////////////////////////////////////////////
+		currentClass->m_vector_FitLayerCentPoint.clear();
+	}
+
+	vector<int> therectHist;
+	therectHist.resize(3000);////求所有面积的中间值
+	for (int i = 0; i<classrect.size(); i++){
+		therectHist[classrect[i]]++;
+	}
+
+	int collect1011Con = 0;
+	int collectIndex4 = 0;
+	for (int i = therectHist.size() - 1; i > 0; i--){
+		collect1011Con += therectHist[i];
+		if (collect1011Con > (classrect.size() / 2)){
+			collectIndex4 = i;
+			break;
+		}
+	}
+
+	for (int i = 0; i < theSetOfserial.size(); i++){
+		//比较当前层与上一层和下一层之间的关系.
+		cLayer   *currentClass = theSetOfserial.at(i);
+		currentClass->GetFitLine();
+		if (currentClass->m_b_LayerLegal == 0){ continue; }
+
+		bool	fitlineresult1 = thefitlineAnaly1(cannySrc1, currentClass->theSetOfCentfit[0], currentClass->theSetOfCentfit.back(), currentClass->theSetOfCent.size());
+		bool	fitlineresult2 = thefitlineAnaly2(cannySrc2, currentClass->theSetOfCentfit[0], currentClass->theSetOfCentfit.back(), currentClass->theSetOfCent.size());
+
+		if ((fitlineresult1 == 0) || (fitlineresult1 == 0)){
+			if (classrect[i] < 0.5*collectIndex4){
+				//if ((currentClass->theSetOfCent.back().y - currentClass->theSetOfCent[0].y >= 400) && (currentClass->theSetOfCent.size() >= 22)){ continue; }
+				if ((currentClass->theSetOfCent.back().y - currentClass->theSetOfCent[0].y >= grayrowscount) && (currentClass->theSetOfCent.size() >= 32)){ continue; }
+				currentClass->isThisSerialOK = 0;
+
+			}
+		}
+	}
+	return 0;
+}
+
+
+cLayer::cLayer()
+{
+	m_b_LayerLegal = TRUE;
+}
+
 //计算平均X值
 void  cLayer::Caclute()
 {
@@ -470,18 +583,67 @@ void cLayer::GetFitLine()
 	return ;
 };
 
+void  cLayer::AddMember(int &layerIndex,Rect &ContoursRect,Point &contoursCentPoint)
+{
+	m_vector_contoursIndex.push_back(layerIndex);
+	m_vecotr_contoursRect.push_back(ContoursRect);
+	m_vector_LayerPoint.push_back(contoursCentPoint);
+};
+
+
 //排序需要使用
 bool cMultiLayers::SortCompareFunction(Point & one,Point &two)
 {
-	return one.x>two.x;
+	return one.x>two.x;  //升序排列
 };
 //分层
 void cMultiLayers::SortLayer()
 {
-	for (int i = 0 ;i < m_pointVector_indexOfAllLayer->size(); i++)
+	//用现有的所有vector的数量去初始化sorIndexOfLayer
+	m_vector_SortLayer.clear();
+	if (m_vector_clayer_AllLayer.size() <3 )
 	{
+		//层数很少的情况
+		return ;
+	}
+	m_vector_sortIndexOfLayer.resize(m_vector_clayer_AllLayer.size());
+	for (int i = 0 ;i < m_vector_clayer_AllLayer.size(); i++)
+	{
+		//计算中心点
+		m_vector_clayer_AllLayer[i].Caclute();
 		m_vector_SortLayer.push_back(Point(m_vector_clayer_AllLayer[i].m_i_PointCentXAverage,i));
 	}
-	//std::sort(m_vector_SortLayer.begin(),m_vector_SortLayer.back(),);
-	 
+	//升序排列各层
+	std::sort(m_vector_SortLayer.begin(),m_vector_SortLayer.end(),cMultiLayers::SortCompareFunction);
+	for (int i = 0 ; i < m_vector_SortLayer.size(); i++)
+	{
+		m_vector_sortIndexOfLayer[i] = m_vector_SortLayer[i].y;
+		m_vector_Layerstatus[i] = m_vector_clayer_AllLayer[m_vector_sortIndexOfLayer[i]].m_b_LayerLegal;
+		m_vector_clayer_AllLayer[m_vector_sortIndexOfLayer[i]].m_i_LayerId = i;
+	}
 }
+
+void cMultiLayers::ArrangeLayer()
+{
+	SortLayer();
+	m_vector_indexLegal.clear();
+	for (int i = 0; i < m_vector_clayer_AllLayer.size(); i++)
+	{
+		if (m_vector_Layerstatus[i])m_vector_indexLegal.push_back(m_vector_Layerstatus[i]);
+	}
+}
+
+void  cMultiLayers::AddMember(cLayer & inputLayer)
+{
+	m_vector_clayer_AllLayer.push_back(inputLayer);
+};
+
+int cMultiLayers::size()
+{
+	return m_vector_indexLegal.size();
+};
+
+cLayer * cMultiLayers::at(int i)
+{
+	return &m_vector_clayer_AllLayer[i];
+};
